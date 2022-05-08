@@ -15,11 +15,14 @@ public class MenuUIHandler : MonoBehaviour
     void Start()
     {
         NameInputField.onEndEdit.AddListener(PlayerNameChanged);
+        NameInputField.text = StateManager.Instance.PlayerName;
+        Debug.Log(StateManager.Instance.PlayerName);
     }
 
     public void PlayerNameChanged(string playerName)
     {
         StateManager.Instance.PlayerName = playerName;
+        StateManager.Instance.SavePlayerName();
     }
 
     public void StartNew()
@@ -34,5 +37,6 @@ public class MenuUIHandler : MonoBehaviour
 #else
         Application.Quit();
 #endif
+        StateManager.Instance.SavePlayerName();
     }
 }
