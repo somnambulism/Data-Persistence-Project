@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
+    public static MainManager Instance;
+
     public Brick BrickPrefab;
     public int LineCount = 6;
     public Rigidbody Ball;
@@ -19,6 +21,9 @@ public class MainManager : MonoBehaviour
     private bool m_GameOver = false;
     private string PlayerName;
 
+    public Text HighScoreText;
+    private int m_HighScorePoints;
+    private string m_HighScoreName;
     
     // Start is called before the first frame update
     void Start()
@@ -26,6 +31,7 @@ public class MainManager : MonoBehaviour
         if (StateManager.Instance != null)
         {
             PlayerName = StateManager.Instance.PlayerName;
+            UpdateHighScore(StateManager.Instance.HighScorePoints, StateManager.Instance.HighScoreName);
         }
         else
         {
@@ -46,6 +52,15 @@ public class MainManager : MonoBehaviour
                 brick.PointValue = pointCountArray[i];
                 brick.onDestroyed.AddListener(AddPoint);
             }
+        }
+    }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
     }
 
@@ -77,11 +92,25 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         ScoreText.text = $"Score : {PlayerName} : {m_Points}";
+        if (m_Points > m_HighScorePoints)
+        {
+            UpdateHighScore(m_Points, PlayerName);
+        }
+    }
+
+    void UpdateHighScore(int points, string playerName)
+    {
+        m_HighScorePoints = points;
+        m_HighScoreName = playerName;
+        HighScoreText.text = $"Best Score : {m_HighScoreName} : {m_HighScorePoints}";
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        StateManager.Instance.HighScoreName = m_HighScoreName;
+        StateManager.Instance.HighScorePoints = m_HighScorePoints;
+        StateManager.Instance.SaveHighScore();
     }
 }

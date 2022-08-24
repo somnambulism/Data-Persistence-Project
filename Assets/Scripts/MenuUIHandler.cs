@@ -10,12 +10,14 @@ using TMPro;
 public class MenuUIHandler : MonoBehaviour
 {
     [SerializeField] private TMP_InputField NameInputField;
+    [SerializeField] private TMP_Text HighScoreField;
 
     // Start is called before the first frame update
     void Start()
     {
         NameInputField.onEndEdit.AddListener(PlayerNameChanged);
         NameInputField.text = StateManager.Instance.PlayerName;
+        HighScoreField.text = $"Best Score: {StateManager.Instance.HighScoreName} : {StateManager.Instance.HighScorePoints}";
         Debug.Log(StateManager.Instance.PlayerName);
     }
 

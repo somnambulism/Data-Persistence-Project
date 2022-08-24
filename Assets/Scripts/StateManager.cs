@@ -8,6 +8,8 @@ public class StateManager : MonoBehaviour
     public static StateManager Instance;
 
     public string PlayerName;
+    public string HighScoreName;
+    public int HighScorePoints;
 
     private void Awake()
     {
@@ -18,19 +20,25 @@ public class StateManager : MonoBehaviour
         }
 
         LoadPlayerName();
+        LoadHighScore();
     }
 
     [System.Serializable]
-    class SaveData
+    class PlayerNameSaveData
     {
         public string PlayerName;
-        //public string HighScoreName;
-        //public int HighScorePoints;
+    }
+
+    [System.Serializable]
+    class HighScoreSaveData
+    {
+        public string HighScoreName;
+        public int HighScorePoints;
     }
 
     public void SavePlayerName()
     {
-        SaveData data = new SaveData();
+        PlayerNameSaveData data = new PlayerNameSaveData();
         data.PlayerName = PlayerName;
 
         string json = JsonUtility.ToJson(data);
@@ -44,9 +52,33 @@ public class StateManager : MonoBehaviour
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
-            SaveData data = JsonUtility.FromJson<SaveData>(json);
+            PlayerNameSaveData data = JsonUtility.FromJson<PlayerNameSaveData>(json);
 
             PlayerName = data.PlayerName;
+        }
+    }
+
+    public void SaveHighScore()
+    {
+        HighScoreSaveData data = new HighScoreSaveData();
+        data.HighScoreName = PlayerName;
+        data.HighScorePoints = HighScorePoints;
+
+        string json = JsonUtility.ToJson(data);
+
+        File.WriteAllText(Application.persistentDataPath + "/highscore.json", json);
+    }
+
+    public void LoadHighScore()
+    {
+        string path = Application.persistentDataPath + "/highscore.json";
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            HighScoreSaveData data = JsonUtility.FromJson<HighScoreSaveData>(json);
+
+            HighScoreName = data.HighScoreName;
+            HighScorePoints = data.HighScorePoints;
         }
     }
 }
